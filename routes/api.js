@@ -13,7 +13,7 @@ router.post(
 )
 router.get("/notes", noteHandler.getAll)
 router.get("/notes/:id", noteHandler.getById)
-router.put("/notes", noteHandler.update)
+router.put("/notes", validator.validate(noteSchema.updateNotes),noteHandler.update)
 router.delete("/notes/:id", noteHandler.deleteById)
 
 module.exports = router
