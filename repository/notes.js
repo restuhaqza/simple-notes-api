@@ -1,86 +1,38 @@
-const fs = require('fs')
-const path = require('path')
-const uuid = require('uuid')
-let filePath = path.join(__dirname, '/../datastore/notes.json')
-
-function save(data){
-  let content = fs.readFileSync(filePath, 'utf-8')
-  if(!content) content = []
-  else {
-    content = JSON.parse(content)
-  }
-
-  data = {
-    ...data,
-    id: uuid.v4()
-  }
-
-  content.push(data)
-
-  fs.writeFileSync(filePath, JSON.stringify(content), (error)=>{
-    console.log(error)
-  })
-
-  return data
+const { noteModel } = require("../datastore/mongo/model/notes")
+const uuid = require("uuid")
+function save(data) {
+  console.log(data)
+  data["id"] = uuid.v4()
+  return noteModel.create(data)
 }
 
-function findAll(){
-  let content = fs.readFileSync(filePath, 'utf-8')
-  if(!content) content = []
-  else {
-    content = JSON.parse(content)
-  }
-
-  return content
+function findAll() {
+  return noteModel.find()
 }
 
-function findById(id){
-  let content = fs.readFileSync(filePath, 'utf-8')
-  if(!content) content = []
-  else {
-    content = JSON.parse(content)
-  }
-
-  return content.find(ele => ele.id == id)
+function findById(id) {
+  return noteModel.findOne({ id })
 }
 
-function update(data){
-  let content = fs.readFileSync(filePath, 'utf-8')
-  if(!content) content = []
-  else {
-    content = JSON.parse(content)
-  }
+async function update(data) {
+   const newData = await noteModel.findOne({id: data.id})
+   if(!newData) return null
 
-  let index = content.findIndex(ele => ele.id == data.id)
-  if(index < 0) return null
-
-  content[index] = data
-
-  fs.writeFileSync(filePath, JSON.stringify(content), (error)=>{
-    console.log(error)
-  })
-
-  return data
+   newData.title = data.title
+   newData.content = data.content
+   
+   return newData.save()
 }
 
-function remove(id){
-  let content = fs.readFileSync(filePath, 'utf-8')
-  if(!content) content = []
-  else {
-    content = JSON.parse(content)
-  }
+async function remove(id) {
+  const newData = await noteModel.findOne({id})
+   if(!newData) return null
 
-  let index = content.findIndex(ele => ele.id == id)
-  if(index < 0) return null
+   let repData = newData
 
-  let data = content[index]
-  content.splice(index, 1)
+   newData.remove()
 
-  fs.writeFileSync(filePath, JSON.stringify(content), (error) =>{
-    console.log(error)
-  })
-
-  return data
+   return repData
 }
 
 module.exports = {
@@ -88,5 +40,5 @@ module.exports = {
   findAll,
   findById,
   update,
-  remove
+  remove,
 }

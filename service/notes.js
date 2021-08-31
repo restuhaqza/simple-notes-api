@@ -1,27 +1,27 @@
-const repository = require('../repository/notes')
+const repository = require('../repository/notes.js')
 
-function create(data) {
-  let newData = repository.save(data)
+async function create(data) {
+  let newData = await repository.save(data)
   return newData
 }
 
-function getAll(){
-  let data = repository.findAll()
+async function getAll(){
+  let data = await repository.findAll()
   return data
 }
 
-function getById(id){
-  let data = repository.findById(id)
+async function getById(id){
+  let data = await repository.findById(id)
   return data
 }
 
-function update(data){
-  let newData = repository.update(data)
+async function update(data){
+  let newData = await repository.update(data)
   return newData
 }
 
-function deleteById(id){
-  let data = repository.remove(id)
+async function deleteById(id){
+  let data = await repository.remove(id)
   return data
 }
 
